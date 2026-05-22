@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>JShDS Simulyatori — FAXR MADAD KONSALT</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'IBM Plex Sans',sans-serif;background:#f5f2eb;color:#1a202c;min-height:100vh;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+.header{background:linear-gradient(135deg,#0d1b3e 0%,#1a3a6e 60%,#0a2a50 100%);padding:32px 0 0;position:relative;overflow:hidden;}
+.header:before{content:'';position:absolute;top:-30%;right:-5%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(212,160,23,.15) 0%,transparent 70%);}
+.hinner{max-width:960px;margin:0 auto;padding:0 20px;position:relative;z-index:1;}
+.gbadge{display:inline-flex;align-items:center;gap:8px;margin-bottom:12px;}
+.gbadge-g{background:linear-gradient(135deg,#d4a017,#f0c840);color:#0d1b3e;font-weight:700;font-size:13px;padding:5px 12px;border-radius:6px;}
+.gbadge-w{color:rgba(255,255,255,.5);font-size:13px;font-weight:500;}
+h1{font-size:clamp(20px,4vw,30px);font-weight:700;color:#fff;line-height:1.35;margin-bottom:6px;}
+h1 span{color:#f0c840;}
+.hsub{color:rgba(255,255,255,.6);font-size:13px;margin-bottom:16px;}
+.gline{width:50px;height:4px;background:linear-gradient(90deg,#d4a017,#f0c840);border-radius:2px;margin-bottom:20px;}
+.sbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;padding:16px 0;border-top:1px solid rgba(255,255,255,.1);}
+.sitem{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;}
+.slabel{color:rgba(255,255,255,.5);font-size:11px;margin-bottom:4px;}
+.sval{color:#fff;font-weight:700;font-size:14px;font-family:'IBM Plex Mono',monospace;}
+.snote{color:rgba(255,255,255,.35);font-size:11px;margin-top:2px;}
+.main{max-width:960px;margin:0 auto;padding:24px 20px;display:flex;flex-direction:column;gap:18px;}
+.card{background:#fff;border:1px solid #e5ddd0;border-radius:16px;box-shadow:0 2px 14px rgba(13,27,62,.07);}
+.card-h{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #f0ebe0;}
+.cicon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.ctit{font-weight:700;font-size:15px;color:#0d1b3e;}
+.csub{font-size:12px;color:#718096;margin-top:2px;}
+.cbody{padding:20px;}
+.tog-btn{width:100%;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:16px 20px;text-align:left;font-family:inherit;}
+.tog-btn:hover{background:#fafaf5;}
+.tog-content{padding:0 20px 20px;display:none;}
+.tog-content.open{display:block;}
+.ibox{background:#eff8ff;border-left:4px solid #3b82f6;border-radius:0 10px 10px 0;padding:14px 16px;margin-bottom:12px;}
+.wbox{background:#fffbeb;border-left:4px solid #d4a017;border-radius:0 10px 10px 0;padding:14px 16px;margin-bottom:12px;}
+.gbox{background:#ecfdf5;border-left:4px solid #00b386;border-radius:0 10px 10px 0;padding:14px 16px;margin-bottom:12px;}
+.btit{font-weight:700;font-size:13px;margin-bottom:6px;}
+.btxt{font-size:13px;line-height:1.7;}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:12px;}
+.tc{border-radius:10px;padding:14px;}
+.tc-b{background:#eff8ff;border:1px solid #bfdbfe;}
+.tc-g{background:#ecfdf5;border:1px solid #a7f3d0;}
+.tc-y{background:#fffbeb;border:1px solid #fde68a;}
+.tc-icon{font-size:18px;margin-bottom:6px;}
+.tc-tit{font-weight:700;font-size:12px;margin-bottom:6px;}
+.tc-bdy{font-size:12px;line-height:1.7;font-family:'IBM Plex Mono',monospace;}
+.slabel2{font-size:13px;font-weight:700;color:#4a5568;margin-bottom:10px;}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+.pill{padding:7px 18px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:2px solid #e5ddd0;background:#fff;color:#4a5568;transition:all .15s;}
+.pill.on{background:#0d1b3e;color:#fff;border-color:#0d1b3e;}
+.mtabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.mtab{padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:2px solid #e5ddd0;background:#fff;color:#4a5568;transition:all .15s;}
+.mtab.on{background:#0d1b3e;color:#fff;border-color:#0d1b3e;}
+select{width:100%;border:2px solid #e5ddd0;border-radius:10px;padding:10px 36px 10px 14px;font-size:14px;font-family:inherit;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%230d1b3e' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") no-repeat right 12px center;-webkit-appearance:none;appearance:none;color:#1a202c;transition:border-color .2s;}
+select:focus{outline:none;border-color:#0d1b3e;box-shadow:0 0 0 3px rgba(13,27,62,.1);}
+.igrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;background:#faf7f0;border:1px solid #e5ddd0;border-radius:12px;padding:16px;}
+.flabel{font-size:12px;font-weight:700;color:#4a5568;margin-bottom:3px;}
+.fhint{font-size:11px;color:#a0aec0;margin-bottom:5px;}
+.frow{position:relative;}
+input[type=number]{width:100%;border:2px solid #e5ddd0;border-radius:9px;padding:10px 44px 10px 12px;font-size:14px;font-family:'IBM Plex Mono',monospace;transition:border-color .2s;background:#fff;color:#1a202c;}
+input[type=number]:focus{outline:none;border-color:#0d1b3e;box-shadow:0 0 0 3px rgba(13,27,62,.1);}
+.funit{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11px;color:#a0aec0;font-weight:500;pointer-events:none;}
+.bnote{margin-top:8px;background:#ecfdf5;border-radius:8px;padding:8px 12px;font-size:12px;color:#065f46;}
+.qrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.qlabel{font-size:12px;font-weight:700;color:#a0aec0;}
+.bsm{padding:5px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:2px solid #0d1b3e;background:#fff;color:#0d1b3e;transition:all .15s;}
+.bsm:hover{background:#0d1b3e;color:#fff;}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-bottom:18px;}
+.rcard{border-radius:12px;padding:16px;}
+.rc-n{background:#0d1b3e;color:#fff;}
+.rc-r{background:linear-gradient(135deg,#c53030,#e53e3e);color:#fff;}
+.rc-g2{background:linear-gradient(135deg,#d4a017,#f0c840);color:#0d1b3e;}
+.rc-gr{background:linear-gradient(135deg,#00b386,#00d4a0);color:#fff;}
+.rclabel{font-size:11px;font-weight:600;opacity:.8;margin-bottom:6px;}
+.rcicon{font-size:20px;margin-bottom:4px;}
+.rcval{font-size:18px;font-weight:700;font-family:'IBM Plex Mono',monospace;line-height:1.2;}
+.rcunit{font-size:11px;opacity:.6;margin-top:2px;}
+.bydj{background:linear-gradient(135deg,#eff8ff,#e0efff);border:1px solid #bfdbfe;border-radius:12px;padding:14px 18px;margin-bottom:16px;}
+.bydj-t{font-weight:700;font-size:13px;color:#1e40af;margin-bottom:6px;}
+.bydj-f{font-size:13px;color:#1e40af;font-family:'IBM Plex Mono',monospace;line-height:1.8;}
+.tabrow{display:flex;gap:4px;background:#f0eee6;border-radius:10px;padding:4px;margin-bottom:14px;}
+.tbtn{flex:1;padding:8px;border:none;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;}
+.tbtn.on{background:#0d1b3e;color:#fff;}
+.tbtn:not(.on){background:transparent;color:#718096;}
+.tbtn:not(.on):hover{background:#e5ddd0;}
+.tpanel{display:none;}
+.tpanel.open{display:block;}
+.twrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{background:#0d1b3e;color:#fff;padding:10px 12px;text-align:left;font-weight:600;font-size:12px;}
+td{padding:9px 12px;border-bottom:1px solid #f0ebe0;}
+tr:nth-child(even) td{background:#faf7f0;}
+.trtot td{background:#e8f0ff!important;font-weight:700;color:#0d1b3e;border-top:2px solid #0d1b3e;}
+.tdr{color:#c53030;font-weight:700;}
+.tdgr{color:#00b386;font-weight:700;}
+.tdg{color:#b7791f;font-weight:700;}
+.tdn{color:#0d1b3e;font-weight:700;}
+.dcrd{background:#faf7f0;border:1px solid #e5ddd0;border-radius:12px;padding:16px;margin-bottom:12px;}
+.dcrdh{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.dcnum{width:30px;height:30px;border-radius:50%;background:#0d1b3e;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.dcmon{font-weight:700;color:#0d1b3e;}
+.dcgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.dctit{font-size:12px;font-weight:700;color:#718096;margin-bottom:8px;}
+.dcrow{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;}
+.dctot{display:flex;justify-content:space-between;font-size:13px;font-weight:700;padding-top:6px;border-top:1px solid #e5ddd0;margin-top:4px;}
+.dccum{text-align:center;background:rgba(13,27,62,.06);border-radius:8px;padding:8px;font-size:12px;font-family:'IBM Plex Mono',monospace;color:#0d1b3e;margin-top:10px;}
+.chrow{margin-bottom:10px;}
+.chlabel{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;}
+.chmon{font-weight:700;color:#0d1b3e;}
+.chtot{color:#718096;font-family:'IBM Plex Mono',monospace;}
+.chbar{height:32px;border-radius:8px;overflow:hidden;display:flex;background:#f0ebe0;}
+.chgr{background:linear-gradient(90deg,#00b386,#00d4a0);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;overflow:hidden;min-width:0;}
+.chrd{background:linear-gradient(90deg,#c53030,#e53e3e);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;overflow:hidden;min-width:0;}
+.chleg{display:flex;gap:16px;margin-top:10px;}
+.legit{display:flex;align-items:center;gap:6px;font-size:12px;color:#718096;}
+.legdot{width:12px;height:12px;border-radius:3px;}
+.exgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;}
+.excrd{background:#faf7f0;border:1px solid #e5ddd0;border-radius:12px;padding:16px;}
+.extit{font-weight:700;font-size:14px;color:#0d1b3e;margin-bottom:8px;}
+.exdes{font-size:13px;color:#4a5568;margin-bottom:12px;line-height:1.6;}
+.exrow{display:flex;justify-content:space-between;font-size:13px;padding:7px 10px;border-radius:7px;margin-bottom:5px;}
+.ew{background:#fff;}
+.er{background:#fef2f2;}
+.eg{background:#ecfdf5;}
+.eb{background:#eff8ff;}
+.ekey{color:#718096;}
+.eval{font-family:'IBM Plex Mono',monospace;font-weight:700;}
+.btngold{width:100%;background:linear-gradient(135deg,#d4a017,#f0c840);color:#0d1b3e;border:none;border-radius:9px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;margin-top:10px;transition:all .2s;}
+.btngold:hover{box-shadow:0 4px 14px rgba(212,160,23,.4);transform:translateY(-1px);}
+.qzdots{display:flex;gap:6px;margin-bottom:14px;}
+.qzdot{width:8px;height:8px;border-radius:50%;background:#e5ddd0;transition:background .3s;}
+.qzprog{height:6px;border-radius:3px;background:#e5ddd0;margin-bottom:18px;overflow:hidden;}
+.qzpfill{height:100%;border-radius:3px;background:linear-gradient(90deg,#00b386,#00d4a0);transition:width .3s;}
+.qzq{font-size:16px;font-weight:600;color:#0d1b3e;margin-bottom:16px;line-height:1.5;}
+.qzopts{display:flex;flex-direction:column;gap:8px;}
+.qzopt{border:2px solid #e5ddd0;border-radius:10px;padding:12px 16px;cursor:pointer;font-size:14px;text-align:left;background:#fff;color:#1a202c;transition:all .15s;width:100%;font-family:inherit;}
+.qzopt:hover:not(:disabled){border-color:#0d1b3e;background:#f0f4ff;}
+.qzopt.ok{border-color:#00b386;background:#ecfdf5;}
+.qzopt.bad{border-color:#e53e3e;background:#fef2f2;}
+.qzopt:disabled{cursor:default;}
+.qzexp{margin-top:14px;border-radius:10px;padding:12px 16px;font-size:13px;line-height:1.6;display:none;}
+.qzexp.ok{background:#ecfdf5;color:#065f46;}
+.qzexp.bad{background:#fffbeb;color:#92400e;}
+.qzfin{text-align:center;padding:20px 0;}
+.btnprim{background:linear-gradient(135deg,#0d1b3e,#1a3a6e);color:#fff;border:none;border-radius:10px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.btnprim:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(13,27,62,.3);}
+.empty{text-align:center;padding:40px 20px;}
+.empty-icon{font-size:48px;margin-bottom:12px;}
+.empty-txt{color:#a0aec0;font-size:14px;}
+.footer{text-align:center;padding:32px 20px;border-top:1px solid #e5ddd0;margin-top:4px;}
+.fbadge{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#0d1b3e,#1a3a6e);border-radius:12px;padding:12px 22px;margin-bottom:10px;}
+.fnote{font-size:12px;color:#a0aec0;margin-top:4px;}
+@media(max-width:600px){.dcgrid{grid-template-columns:1fr;}.rgrid{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="hinner">
+    <div class="gbadge">
+      <span class="gbadge-g">FAXR MADAD</span>
+      <span class="gbadge-w">KONSALT — Buxgalteriya maktabi</span>
+    </div>
+    <h1>Jismoniy Shaxs Daromad Solig'i<br><span>Hisoblash Simulyatori</span></h1>
+    <p class="hsub">Amaliy mashq &middot; SK 388-modda asosida &middot; 2025&ndash;2026</p>
+    <div class="gline"></div>
+    <div class="sbar">
+      <div class="sitem"><div class="slabel">Asosiy stavka</div><div class="sval">12%</div><div class="snote">SK 388-m.</div></div>
+      <div class="sitem"><div class="slabel">MHEKM (2025 avg)</div><div class="sval">1 271 000</div><div class="snote">so&#39;m</div></div>
+      <div class="sitem"><div class="slabel">Moddiy yordam imtiyozi</div><div class="sval">4,22 &times; MHEKM</div><div class="snote">5 363 620 so&#39;m</div></div>
+      <div class="sitem"><div class="slabel">Sov&#39;a imtiyozi</div><div class="sval">2,11 &times; MHEKM</div><div class="snote">2 681 810 so&#39;m</div></div>
+      <div class="sitem"><div class="slabel">ShJBPH badali</div><div class="sval">0,1%</div><div class="snote">Mehnat daromadidan</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- THEORY -->
+  <div class="card">
+    <button class="tog-btn" onclick="toggleTh()">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="cicon" style="background:#eff8ff;">&#128218;</div>
+        <div><div class="ctit">Nazariy asos &mdash; &#34;For Dummies&#34; uslubida</div><div class="csub">Hisoblash usuli va formulalarni ko&#39;rish uchun bosing</div></div>
+      </div>
+      <svg id="th-arr" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#718096" stroke-width="2" style="transition:.2s;flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="tog-content" id="th-body">
+      <div class="ibox">
+        <div class="btit" style="color:#1e40af">&#129518; JShDS qanday hisoblanadi?</div>
+        <div class="btxt" style="color:#1e40af">JShDS <strong>yil boshidan o&#39;sib boruvchi yakun</strong> bilan hisoblanadi (SK 388-m. 6-q.).<br><br>
+        <strong>May oyi misoli:</strong><br>
+        1. Yanvar&ndash;may jami daromadidan JShDS hisoblang<br>
+        2. Yanvar&ndash;aprel JShDS summasini ayirib tashlang<br>
+        3. <strong>Natija = May oyi JShDS</strong></div>
+      </div>
+      <div class="tgrid">
+        <div class="tc tc-b"><div class="tc-icon">&#128202;</div><div class="tc-tit" style="color:#1e40af">Soliq bazasi formulasi</div><div class="tc-bdy" style="color:#1e40af">Jami daromad<br>&#8722; Imtiyozlar (SK380)<br>&#8722; Ozod etilgan (SK378)<br>= Soliq bazasi<br>&times; 12% = JShDS</div></div>
+        <div class="tc tc-g"><div class="tc-icon">&#127968;</div><div class="tc-tit" style="color:#065f46">ShJBPH (pensiya) badali</div><div class="tc-bdy" style="color:#065f46">Mehnat daromadi &times; 0,1%<br>= Badal<br><br>Bu summa JShDSdan<br>chegirib &#171;Xalq banki&#187;ga<br>o&#39;tkaziladi</div></div>
+        <div class="tc tc-y"><div class="tc-icon">&#127873;</div><div class="tc-tit" style="color:#92400e">Ozod etilgan daromadlar</div><div class="tc-bdy" style="color:#92400e">Moddiy yordam:<br>max 4,22&times;MHEKM<br>= 5 363 620 so&#39;m<br><br>Sov&#39;a:<br>max 2,11&times;MHEKM<br>= 2 681 810 so&#39;m</div></div>
+      </div>
+      <div class="wbox"><div class="btit" style="color:#92400e">&#9888;&#65039; Muhim: Imtiyozlar faqat asosiy ish joyida!</div><div class="btxt" style="color:#92400e">O&#39;rindoshlik bo&#39;yicha ishlovchilar imtiyozni faqat yillik deklaratsiya orqali olishi mumkin (SK 388-m. 7-q.).</div></div>
+      <div class="gbox"><div class="btit" style="color:#065f46">&#9989; Byudjetga o&#39;tkaziladigan summa</div><div class="btxt" style="color:#065f46"><strong>Byudjetga JShDS = Hisoblangan JShDS &minus; ShJBPH badali</strong><br>ShJBPH &#171;Xalq banki&#187;ga, qolgan qismi davlat byudjetiga o&#39;tkaziladi.</div></div>
+    </div>
+  </div>
+
+  <!-- CALCULATOR -->
+  <div class="card">
+    <div class="card-h">
+      <div class="cicon" style="background:#f0f4ff;">&#9999;&#65039;</div>
+      <div><div class="ctit">Ma&#39;lumot kiritish</div><div class="csub">Oylik daromadlar va imtiyozlarni kiriting</div></div>
+    </div>
+    <div class="cbody">
+      <div class="slabel2">Hisoblash oylari:</div>
+      <div class="pills" id="mpills">
+        <button class="pill" onclick="setM(1,this)">1 oy</button>
+        <button class="pill" onclick="setM(2,this)">2 oy</button>
+        <button class="pill on" onclick="setM(3,this)">3 oy</button>
+        <button class="pill" onclick="setM(6,this)">6 oy</button>
+        <button class="pill" onclick="setM(12,this)">12 oy</button>
+      </div>
+      <div class="slabel2">Imtiyoz turi (SK 380-modda):</div>
+      <select id="ben-sel" onchange="benChg()" style="margin-bottom:10px;">
+        <option value="none">Imtiyoz yo&#39;q</option>
+        <optgroup label="&#127981; Nogironlik (SK 380-m.)">
+          <option value="d1">I guruh nogironligi &mdash; MHEKM &times; 3 = 3 813 000 so&#39;m/oy</option>
+          <option value="d2">II guruh nogironligi &mdash; MHEKM &times; 3 = 3 813 000 so&#39;m/oy</option>
+        </optgroup>
+        <optgroup label="&#9876;&#65039; Urush qatnashchilari (SK 380-m.)">
+          <option value="war">Urush nogironi/ishtirokchisi &mdash; MHEKM &times; 3 = 3 813 000 so&#39;m/oy</option>
+          <option value="war_parent">Halok bo&#39;lgan harbiyning ota-onasi/beva &mdash; MHEKM &times; 3 = 3 813 000 so&#39;m/oy</option>
+        </optgroup>
+        <optgroup label="&#128106; Oilaviy imtiyoz (SK 380-m.)">
+          <option value="sp">Yolg&#39;iz ona/ota &mdash; MHEKM &times; 1,41 = 1 792 110 so&#39;m/oy</option>
+        </optgroup>
+      </select>
+      <div id="ben-note" class="bnote" style="display:none;margin-bottom:12px;"></div>
+      <div class="slabel2" style="margin-top:14px;">Oy tanlang:</div>
+      <div class="mtabs" id="mtabs"></div>
+      <div class="igrid">
+        <div><div class="flabel">Ish haqi</div><div class="fhint">Asosiy maosh</div><div class="frow"><input type="number" id="in-s" min="0" placeholder="0" oninput="inpChg('s')"><span class="funit">so&#39;m</span></div></div>
+        <div><div class="flabel">Moddiy yordam</div><div class="fhint">Qishloq x/j, nikoh va h.k.</div><div class="frow"><input type="number" id="in-m" min="0" placeholder="0" oninput="inpChg('m')"><span class="funit">so&#39;m</span></div></div>
+        <div><div class="flabel">Sov&#39;a</div><div class="fhint">Yubiley va boshqalar</div><div class="frow"><input type="number" id="in-g" min="0" placeholder="0" oninput="inpChg('g')"><span class="funit">so&#39;m</span></div></div>
+      </div>
+      <div class="qrow">
+        <span class="qlabel">Tezkor:</span>
+        <button class="bsm" onclick="qf(980000,0,0)">Minimal maosh</button>
+        <button class="bsm" onclick="qf(3500000,0,0)">O&#39;rtacha</button>
+        <button class="bsm" onclick="qf(10000000,0,0)">Yuqori maosh</button>
+        <button class="bsm" onclick="qf(3500000,4000000,0)">Mat. yordam bilan</button>
+        <button class="bsm" onclick="qf(5000000,2000000,1000000)">Sov&#39;a bilan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="card" id="res-card">
+    <div class="card-h">
+      <div class="cicon" style="background:#ecfdf5;">&#128202;</div>
+      <div><div class="ctit">Hisoblash natijalari</div><div class="csub" id="res-sub">Ma&#39;lumot kiriting</div></div>
+    </div>
+    <div class="cbody" id="res-body">
+      <div class="empty"><div class="empty-icon">&#128202;</div><div class="empty-txt">Ma&#39;lumot kiriting va natijalar shu yerda ko&#39;rinadi</div></div>
+    </div>
+  </div>
+
+  <!-- EXAMPLES -->
+  <div class="card">
+    <div class="card-h">
+      <div class="cicon" style="background:#fef9e7;">&#128214;</div>
+      <div><div class="ctit">Amaliy misollar &mdash; Darslik ko&#39;rinishida</div><div class="csub">SK 388-modda asosidagi haqiqiy misollar</div></div>
+    </div>
+    <div class="cbody">
+      <div class="exgrid">
+        <div class="excrd">
+          <div class="extit">&#128203; Misol 1 &mdash; O&#39;sib boruvchi yakun</div>
+          <div class="exdes">Yanvar&ndash;May: 1 500 000 so&#39;m/oy<br>Iyun: 1 700 000 so&#39;m</div>
+          <div class="exrow ew"><span class="ekey">Yan&ndash;Iyun jami:</span><span class="eval" style="color:#0d1b3e">9 200 000</span></div>
+          <div class="exrow er"><span class="ekey">Jami JShDS (&times;12%):</span><span class="eval" style="color:#c53030">1 104 000</span></div>
+          <div class="exrow er"><span class="ekey">Yan&ndash;May JShDS:</span><span class="eval" style="color:#c53030">&minus; 900 000</span></div>
+          <div class="exrow eg"><span class="ekey">Iyun JShDS:</span><span class="eval" style="color:#00b386">204 000</span></div>
+          <button class="btngold" onclick="ex1()">&#9654; Simulyatorda ochish</button>
+        </div>
+        <div class="excrd">
+          <div class="extit">&#128203; Misol 2 &mdash; I guruh nogironi</div>
+          <div class="exdes">Yanvar&ndash;Fevral: 4 500 000 so&#39;m/oy<br>SK 380-m. imtiyozi qo&#39;llaniladi</div>
+          <div class="exrow ew"><span class="ekey">Jami daromad:</span><span class="eval" style="color:#0d1b3e">9 000 000</span></div>
+          <div class="exrow eb"><span class="ekey">Imtiyoz (3&times;MHEKM&times;2):</span><span class="eval" style="color:#1e40af">&minus; 7 626 000</span></div>
+          <div class="exrow ew"><span class="ekey">Soliq bazasi:</span><span class="eval" style="color:#0d1b3e">1 374 000</span></div>
+          <div class="exrow er"><span class="ekey">JShDS (&times;12%):</span><span class="eval" style="color:#c53030">164 880</span></div>
+          <button class="btngold" onclick="ex2()">&#9654; Simulyatorda ochish</button>
+        </div>
+        <div class="excrd">
+          <div class="extit">&#128203; Misol 3 &mdash; Moddiy yordam + Sov&#39;a</div>
+          <div class="exdes">Yanvar: 3 500 000 + 2 900 000 sov&#39;a<br>Fevral: 3 500 000 + 4 000 000 mat. yordam</div>
+          <div class="exrow ew"><span class="ekey">Maosh jami:</span><span class="eval" style="color:#0d1b3e">7 000 000</span></div>
+          <div class="exrow eg"><span class="ekey">Sov&#39;a ozod (2,11&times;MHEKM):</span><span class="eval" style="color:#00b386">&minus; 2 681 810</span></div>
+          <div class="exrow eg"><span class="ekey">Mat. yordam ozod:</span><span class="eval" style="color:#00b386">&minus; 4 000 000</span></div>
+          <div class="exrow er"><span class="ekey">Fevral JShDS:</span><span class="eval" style="color:#c53030">204 947</span></div>
+          <button class="btngold" onclick="ex3()">&#9654; Simulyatorda ochish</button>
+        </div>
+        <div class="excrd">
+          <div class="extit">&#9876;&#65039; Misol 4 &mdash; Urush ishtirokchisi</div>
+          <div class="exdes">Yanvar&ndash;Mart: 5 000 000 so&#39;m/oy<br>SK 380-m. &mdash; MHEKM &times; 3 imtiyozi</div>
+          <div class="exrow ew"><span class="ekey">Jami daromad (3 oy):</span><span class="eval" style="color:#0d1b3e">15 000 000</span></div>
+          <div class="exrow eb"><span class="ekey">Imtiyoz (3&times;MHEKM&times;3 oy):</span><span class="eval" style="color:#1e40af">&minus; 11 439 000</span></div>
+          <div class="exrow ew"><span class="ekey">Soliq bazasi:</span><span class="eval" style="color:#0d1b3e">3 561 000</span></div>
+          <div class="exrow er"><span class="ekey">Jami JShDS (&times;12%):</span><span class="eval" style="color:#c53030">427 320</span></div>
+          <div class="exrow eg"><span class="ekey">Mart uchun JShDS:</span><span class="eval" style="color:#00b386">142 440</span></div>
+          <button class="btngold" onclick="ex4()">&#9654; Simulyatorda ochish</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="card">
+    <div class="card-h">
+      <div class="cicon" style="background:#fef3c7;">&#127919;</div>
+      <div><div class="ctit">Bilim tekshiruvi</div><div class="csub" id="qz-sub">6 savol</div></div>
+    </div>
+    <div class="cbody" id="qz-body"></div>
+  </div>
+
+  <div class="footer">
+    <div class="fbadge">
+      <span class="gbadge-g">FAXR MADAD</span>
+      <span style="color:#fff;font-size:14px;font-weight:500;">KONSALT &mdash; Buxgalteriya maktabi</span>
+    </div>
+    <div class="fnote">JShDS hisoblash simulyatori &middot; SK 388-modda asosida &middot; 2025&ndash;2026</div>
+    <div class="fnote" style="margin-top:4px;">Asosiy stavka 12% &middot; MHEKM 1 271 000 so&#39;m &middot; ShJBPH 0,1%</div>
+  </div>
+</div>
+
+<script>
+var MHEKM=1271000,MX_MAT=MHEKM*4.22,MX_GIFT=MHEKM*2.11;
+var MN=['Yanvar','Fevral','Mart','Aprel','May','Iyun','Iyul','Avgust','Sentabr','Oktabr','Noyabr','Dekabr'];
+var BM={none:0,d1:3,d2:3,war:3,war_parent:3,sp:1.41};
+var S={months:3,am:0,sal:Array(12).fill(0),mat:Array(12).fill(0),gft:Array(12).fill(0),ben:'none'};
+
+function f(n){return Math.round(n).toLocaleString('uz-UZ');}
+
+function calc(){
+  var ben=BM[S.ben]*MHEKM,cS=0,cM=0,cG=0,cB=0,cT=0,cP=0,rows=[];
+  for(var i=0;i<S.months;i++){
+    var pS=cS,pM=cM,pG=cG,pB=cB,pT=cT,pP=cP;
+    var sal=S.sal[i]||0,mat=S.mat[i]||0,gft=S.gft[i]||0;
+    cS+=sal;cM+=mat;cG+=gft;cB=ben*(i+1);
+    var cME=Math.min(cM,MX_MAT),pME=Math.min(pM,MX_MAT),mME=cME-pME,mMT=mat-mME;
+    var cGE=Math.min(cG,MX_GIFT),pGE=Math.min(pG,MX_GIFT),mGE=cGE-pGE,mGT=gft-mGE;
+    var cTB=Math.max(0,cS+(cM-cME)+(cG-cGE)-cB),pTB=Math.max(0,pS+(pM-pME)+(pG-pGE)-pB),mTB=cTB-pTB;
+    var mT=Math.max(0,cTB*0.12-pT);cT=pT+mT;
+    var mP=Math.max(0,(Math.max(0,cS-cB)-Math.max(0,pS-pB))*0.001);cP=pP+mP;
+    var nT=Math.max(0,mT-mP),hnd=sal+mat+gft-mT;
+    rows.push({mn:MN[i],sal:sal,mat:mat,mME:mME,mMT:mMT,gft:gft,mGE:mGE,mGT:mGT,ben:ben,mTB:mTB,cTB:cTB,mT:mT,cT:cT,mP:mP,nT:nT,hnd:hnd});
+  }
+  return rows;
+}
+
+function rend(){
+  var rows=calc(),hd=rows.some(function(r){return r.sal>0||r.mat>0||r.gft>0;});
+  var rb=document.getElementById('res-body'),rs=document.getElementById('res-sub');
+  if(!hd){rs.textContent="Ma'lumot kiriting";rb.innerHTML='<div class="empty"><div class="empty-icon">&#128202;</div><div class="empty-txt">Ma&#39;lumot kiriting va natijalar shu yerda ko&#39;rinadi</div></div>';return;}
+  rs.textContent=rows.length+' oy uchun yig\'ma natija';
+  var tS=0,tT=0,tP=0,tH=0,tN=0;
+  rows.forEach(function(r){tS+=r.sal;tT+=r.mT;tP+=r.mP;tH+=r.hnd;tN+=r.nT;});
+  rb.innerHTML='<div class="rgrid"><div class="rcard rc-n"><div class="rcicon">&#128176;</div><div class="rclabel">Jami hisoblangan daromad</div><div class="rcval">'+f(tS)+'</div><div class="rcunit">so\'m</div></div><div class="rcard rc-r"><div class="rcicon">&#128228;</div><div class="rclabel">JShDS (hisoblangan)</div><div class="rcval">'+f(tT)+'</div><div class="rcunit">so\'m</div></div><div class="rcard rc-g2"><div class="rcicon">&#127968;</div><div class="rclabel">ShJBPH badali</div><div class="rcval">'+f(tP)+'</div><div class="rcunit">so\'m</div></div><div class="rcard rc-gr"><div class="rcicon">&#9989;</div><div class="rclabel">Qo\'lga olgan summa</div><div class="rcval">'+f(tH)+'</div><div class="rcunit">so\'m</div></div></div>'
+  +'<div class="bydj"><div class="bydj-t">&#127963;&#65039; Byudjetga o\'tkaziladigan JShDS</div><div class="bydj-f">JShDS ('+f(tT)+') &minus; ShJBPH ('+f(tP)+') = <strong style="font-size:16px;color:#0d1b3e"> '+f(tN)+' so\'m</strong></div></div>'
+  +'<div class="tabrow"><button class="tbtn on" id="tb-t" onclick="sw(\'t\')">Jadval</button><button class="tbtn" id="tb-d" onclick="sw(\'d\')">Batafsil</button><button class="tbtn" id="tb-c" onclick="sw(\'c\')">Grafik</button></div>'
+  +'<div class="tpanel open" id="tp-t">'+bldTbl(rows,tS,tT,tP,tN,tH)+'</div>'
+  +'<div class="tpanel" id="tp-d">'+bldDet(rows)+'</div>'
+  +'<div class="tpanel" id="tp-c">'+bldChr(rows)+'</div>';
+}
+
+function sw(k){
+  ['t','d','c'].forEach(function(x){
+    var p=document.getElementById('tp-'+x),b=document.getElementById('tb-'+x);
+    if(p){p.className='tpanel'+(x===k?' open':'');}
+    if(b){b.className='tbtn'+(x===k?' on':'');}
+  });
+}
+
+function bldTbl(rows,tS,tT,tP,tN,tH){
+  var h='<div class="twrap"><table><thead><tr><th>Oy</th><th>Ish haqi</th><th>Soliq bazasi</th><th>JShDS 12%</th><th>ShJBPH 0,1%</th><th>Byudjetga</th><th>Qo\'lga</th></tr></thead><tbody>';
+  rows.forEach(function(r){h+='<tr><td><strong>'+r.mn+'</strong></td><td class="mono">'+f(r.sal)+'</td><td class="mono">'+f(r.mTB)+'</td><td class="mono tdr">'+f(r.mT)+'</td><td class="mono tdg">'+f(r.mP)+'</td><td class="mono tdn">'+f(r.nT)+'</td><td class="mono tdgr">'+f(r.hnd)+'</td></tr>';});
+  h+='<tr class="trtot"><td>JAMI</td><td class="mono">'+f(tS)+'</td><td>&mdash;</td><td class="mono">'+f(tT)+'</td><td class="mono">'+f(tP)+'</td><td class="mono">'+f(tN)+'</td><td class="mono">'+f(tH)+'</td></tr></tbody></table></div>';
+  return h;
+}
+
+function bldDet(rows){
+  var h='';
+  rows.forEach(function(r,i){
+    h+='<div class="dcrd"><div class="dcrdh"><div class="dcnum">'+(i+1)+'</div><div class="dcmon">'+r.mn+' oyi &mdash; Batafsil hisob</div></div><div class="dcgrid"><div><div class="dctit">Daromadlar:</div><div class="dcrow"><span>Ish haqi:</span><span class="mono" style="font-weight:700">'+f(r.sal)+' so\'m</span></div>'
+    +(r.mat>0?'<div class="dcrow"><span>Moddiy yordam:</span><span class="mono">'+f(r.mat)+' so\'m</span></div>':'')
+    +(r.mME>0?'<div class="dcrow" style="font-size:12px;color:#00b386"><span>&#9989; Ozod etilgan:</span><span class="mono">&minus;'+f(r.mME)+' so\'m</span></div>':'')
+    +(r.gft>0?'<div class="dcrow"><span>Sov\'a:</span><span class="mono">'+f(r.gft)+' so\'m</span></div>':'')
+    +(r.mGE>0?'<div class="dcrow" style="font-size:12px;color:#00b386"><span>&#9989; Ozod etilgan:</span><span class="mono">&minus;'+f(r.mGE)+' so\'m</span></div>':'')
+    +(r.ben>0?'<div class="dcrow" style="font-size:12px;color:#3b82f6"><span>&#127919; SK380 imtiyoz:</span><span class="mono">&minus;'+f(r.ben)+' so\'m</span></div>':'')
+    +'</div><div><div class="dctit">Soliq hisoblash:</div><div class="dcrow"><span>Soliq bazasi:</span><span class="mono" style="font-weight:700">'+f(r.mTB)+' so\'m</span></div><div class="dcrow" style="color:#c53030"><span>JShDS (&times;12%):</span><span class="mono" style="font-weight:700">'+f(r.mT)+' so\'m</span></div><div class="dcrow" style="color:#b7791f"><span>ShJBPH (&times;0,1%):</span><span class="mono" style="font-weight:700">'+f(r.mP)+' so\'m</span></div><div class="dctot" style="color:#0d1b3e"><span>Byudjetga:</span><span class="mono">'+f(r.nT)+' so\'m</span></div><div class="dcrow" style="color:#00b386;font-weight:700"><span>Qo\'lga:</span><span class="mono">'+f(r.hnd)+' so\'m</span></div></div></div>'
+    +'<div class="dccum">&#129518; O\'sib boruvchi yakun: Yanvar&ndash;'+r.mn+' jami soliq = <strong>'+f(r.cT)+' so\'m</strong></div></div>';
+  });
+  return h;
+}
+
+function bldChr(rows){
+  var h='<p style="font-size:13px;font-weight:700;color:#0d1b3e;margin-bottom:12px;">Oy bo\'yicha taqsimot:</p>';
+  rows.forEach(function(r){
+    var tot=r.sal+r.mat+r.gft;if(!tot)return;
+    var tp=(r.mT/tot)*100,hp=(r.hnd/tot)*100;
+    h+='<div class="chrow"><div class="chlabel"><span class="chmon">'+r.mn+'</span><span class="chtot">'+f(tot)+' so\'m</span></div><div class="chbar"><div class="chgr" style="width:'+Math.max(hp,0)+'%">'+(hp>15?f(r.hnd):'')+'</div><div class="chrd" style="width:'+Math.max(tp,0)+'%">'+(tp>5?f(r.mT):'')+'</div></div></div>';
+  });
+  h+='<div class="chleg"><div class="legit"><div class="legdot" style="background:#00b386"></div>Qo\'lga olgan</div><div class="legit"><div class="legdot" style="background:#c53030"></div>JShDS</div></div>';
+  return h;
+}
+
+function setM(n,b){
+  S.months=n;S.am=Math.min(S.am,n-1);
+  document.querySelectorAll('#mpills .pill').forEach(function(p){p.classList.remove('on');});
+  if(b)b.classList.add('on');
+  mkTabs();syncInp();rend();
+}
+
+function mkTabs(){
+  var c=document.getElementById('mtabs');c.innerHTML='';
+  for(var i=0;i<S.months;i++){
+    var b=document.createElement('button');
+    b.className='mtab'+(i===S.am?' on':'');
+    b.textContent=MN[i];
+    (function(idx){b.onclick=function(){selM(idx);};})(i);
+    c.appendChild(b);
+  }
+}
+
+function selM(idx){
+  S.am=idx;
+  document.querySelectorAll('.mtab').forEach(function(b,i){b.classList.toggle('on',i===idx);});
+  syncInp();
+}
+
+function syncInp(){
+  var i=S.am;
+  document.getElementById('in-s').value=S.sal[i]||'';
+  document.getElementById('in-m').value=S.mat[i]||'';
+  document.getElementById('in-g').value=S.gft[i]||'';
+}
+
+function inpChg(fld){
+  var i=S.am,v=parseFloat(document.getElementById('in-'+fld).value)||0;
+  if(fld==='s')S.sal[i]=v;
+  if(fld==='m')S.mat[i]=v;
+  if(fld==='g')S.gft[i]=v;
+  rend();
+}
+
+function benChg(){
+  S.ben=document.getElementById('ben-sel').value;
+  var nd=document.getElementById('ben-note'),mul=BM[S.ben];
+  if(mul>0){
+    nd.style.display='block';
+    var docs='';
+    if(S.ben==='war') docs='<br><small style="opacity:.8">&#128196; Talab: urush ishtirokchisi guvohnomasi, mudofaa ishlari bo&#39;yicha ma&#39;lumotnoma</small>';
+    if(S.ben==='war_parent') docs='<br><small style="opacity:.8">&#128196; Talab: bevalik pensiya guvohnomasi, vafot to&#39;g&#39;risida ma&#39;lumotnoma</small>';
+    if(S.ben==='d1'||S.ben==='d2') docs='<br><small style="opacity:.8">&#128196; 2025-yil 1-iyuldan imtiyoz proaktiv (murojaatsiz) qo&#39;llaniladi</small>';
+    nd.innerHTML='&#9989; Har oyda <strong>'+f(MHEKM*mul)+' so&#39;m</strong> soliq bazasidan ayiriladi'+docs;
+  } else nd.style.display='none';
+  rend();
+}
+
+function toggleTh(){
+  var c=document.getElementById('th-body'),a=document.getElementById('th-arr'),op=c.classList.toggle('open');
+  a.style.transform=op?'rotate(180deg)':'rotate(0)';
+}
+
+function qf(s,m,g){var i=S.am;S.sal[i]=s;S.mat[i]=m;S.gft[i]=g;syncInp();rend();}
+
+function ex1(){
+  S.months=6;S.ben='none';S.am=0;
+  S.sal=[1500000,1500000,1500000,1500000,1500000,1700000,0,0,0,0,0,0];
+  S.mat=Array(12).fill(0);S.gft=Array(12).fill(0);
+  document.getElementById('ben-sel').value='none';benChg();
+  document.querySelectorAll('#mpills .pill').forEach(function(p){p.classList.toggle('on',p.textContent==='6 oy');});
+  mkTabs();syncInp();rend();
+  document.getElementById('res-card').scrollIntoView({behavior:'smooth'});
+}
+function ex2(){
+  S.months=2;S.ben='d1';S.am=0;
+  S.sal=[4500000,4500000,0,0,0,0,0,0,0,0,0,0];
+  S.mat=Array(12).fill(0);S.gft=Array(12).fill(0);
+  document.getElementById('ben-sel').value='d1';benChg();
+  document.querySelectorAll('#mpills .pill').forEach(function(p){p.classList.toggle('on',p.textContent==='2 oy');});
+  mkTabs();syncInp();rend();
+  document.getElementById('res-card').scrollIntoView({behavior:'smooth'});
+}
+function ex3(){
+  S.months=2;S.ben='sp';S.am=0;
+  S.sal=[3500000,3500000,0,0,0,0,0,0,0,0,0,0];
+  S.mat=[0,4000000,0,0,0,0,0,0,0,0,0,0];
+  S.gft=[2900000,0,0,0,0,0,0,0,0,0,0,0];
+  document.getElementById('ben-sel').value='sp';benChg();
+  document.querySelectorAll('#mpills .pill').forEach(function(p){p.classList.toggle('on',p.textContent==='2 oy');});
+  mkTabs();syncInp();rend();
+  document.getElementById('res-card').scrollIntoView({behavior:'smooth'});
+}
+function ex4(){
+  S.months=3;S.ben='war';S.am=0;
+  S.sal=[5000000,5000000,5000000,0,0,0,0,0,0,0,0,0];
+  S.mat=Array(12).fill(0);S.gft=Array(12).fill(0);
+  document.getElementById('ben-sel').value='war';benChg();
+  document.querySelectorAll('#mpills .pill').forEach(function(p){p.classList.toggle('on',p.textContent==='3 oy');});
+  mkTabs();syncInp();rend();
+  document.getElementById('res-card').scrollIntoView({behavior:'smooth'});
+}
+
+// QUIZ
+var QZ=[
+  {q:"JShDSning asosiy stavkasi qancha?",opts:["10%","12%","15%","20%"],ans:1,exp:"To'g'ri! JShDSning asosiy stavkasi 12% (SK 388-m.). Dividend va foizlarga 5% stavka qo'llaniladi."},
+  {q:"ShJBPHga (pensiya jamg'arma) majburiy badal qancha foiz?",opts:["0,01%","0,1%","1%","2%"],ans:1,exp:"To'g'ri! Pensiya jamg'arma badali soliqqa tortiladigan mehnat daromadining 0,1% ini tashkil etadi."},
+  {q:"2025 yil 1 avgustdan MHEKM qancha?",opts:["1 155 000 so'm","1 271 000 so'm","1 350 000 so'm","900 000 so'm"],ans:1,exp:"To'g'ri! 2025 yil 1 avgustdan MHEKM 1 271 000 so'mni tashkil etadi."},
+  {q:"Urush nogironi/ishtirokchisiga qanday JShDS imtiyozi beriladi?",opts:["Imtiyoz yo'q","MHEKM × 1,41 ayiriladi","MHEKM × 3 ayiriladi","Butun daromad ozod etiladi"],ans:2,exp:"To'g'ri! SK 380-modda bo'yicha urush nogironlari va ishtirokchilariga har oyda MHEKM × 3 = 3 813 000 so'm soliq bazasidan ayiriladi."},
+  {q:"Moddiy yordamning qaysi qismi JShDSdan ozod etiladi?",opts:["MHEKMning 2,11 baravari","MHEKMning 4,22 baravari","1 000 000 so'm","Butun summa"],ans:1,exp:"To'g'ri! Qishloq x/j mahsulotlari va shunga o'xshash moddiy yordam uchun yiliga 4,22x MHEKM = 5 363 620 so'm ozod etiladi."},
+  {q:"JShDS qanday usulda hisoblanadi?",opts:["Har oy alohida","Yil boshidan o'sib boruvchi yakun bilan","Har chorak yakuni bilan","Yil oxirida bir marta"],ans:1,exp:"To'g'ri! JShDS yil boshidan o'sib boruvchi yakun bilan hisoblanadi (SK 388-m. 6-q.)."}
+];
+var QS={cur:0,score:0,done:false};
+
+function rendQz(){
+  var b=document.getElementById('qz-body'),s=document.getElementById('qz-sub');
+  if(QS.cur>=QZ.length){
+    var pct=Math.round((QS.score/QZ.length)*100),em=pct>=80?'&#127942;':pct>=60?'&#128077;':'&#128218;',col=pct>=80?'#00b386':pct>=60?'#d4a017':'#c53030';
+    var msg=pct>=80?"Ajoyib! Siz JShDS hisoblash bo'yicha yaxshi bilimga egasiz!":pct>=60?"Yaxshi! Ammo yana bir marta o'qib chiqish foydali bo'ladi.":"Simulyatorda mashq qiling va nazariy qismni o'qing.";
+    s.textContent='Yakunlandi';
+    b.innerHTML='<div class="qzfin"><div style="font-size:52px;margin-bottom:8px;">'+em+'</div><div style="font-size:22px;font-weight:700;color:#0d1b3e;margin-bottom:4px;">'+QS.score+'/'+QZ.length+" to'g'ri</div>"+'<div style="font-size:48px;font-weight:700;font-family:\'IBM Plex Mono\',monospace;color:'+col+';margin-bottom:12px;">'+pct+'%</div><p style="color:#718096;font-size:14px;margin-bottom:20px;">'+msg+'</p><button class="btnprim" onclick="restQz()">Qayta boshlash</button></div>';
+    return;
+  }
+  var q=QZ[QS.cur];s.textContent='Savol '+(QS.cur+1)+'/'+QZ.length+' - Ball: '+QS.score;
+  var dots='';QZ.forEach(function(_,i){dots+='<div class="qzdot" style="background:'+(i<QS.cur?'#00b386':i===QS.cur?'#d4a017':'#e5ddd0')+'"></div>';});
+  var opts='';q.opts.forEach(function(o,i){opts+='<button class="qzopt" id="qo-'+i+'" onclick="ansQz('+i+')">'+['A','B','D','E'][i]+'. '+o+'</button>';});
+  b.innerHTML='<div class="qzdots">'+dots+'</div><div class="qzprog"><div class="qzpfill" style="width:'+(QS.cur/QZ.length*100)+'%"></div></div><div class="qzq">'+q.q+'</div><div class="qzopts">'+opts+'</div><div class="qzexp" id="qzexp"></div>';
+}
+
+function ansQz(idx){
+  var q=QZ[QS.cur];var ok=idx===q.ans;if(ok)QS.score++;
+  document.querySelectorAll('.qzopt').forEach(function(b,i){b.disabled=true;if(i===q.ans)b.classList.add('ok');else if(i===idx)b.classList.add('bad');});
+  var e=document.getElementById('qzexp');e.style.display='block';e.className='qzexp '+(ok?'ok':'bad');e.textContent=(ok?'✅ ':'❌ ')+q.exp;
+  setTimeout(function(){QS.cur++;rendQz();},2000);
+}
+
+function restQz(){QS={cur:0,score:0,done:false};rendQz();}
+
+mkTabs();syncInp();rendQz();
+</script>
+</body>
+</html>
